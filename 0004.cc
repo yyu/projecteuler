@@ -26,8 +26,8 @@ bool ispalin(int x) {
 int main(int argc, char* argv[]) {
     int _cnt_ = 0;
     int largest = 1;
-    for (int i = 999; i > 100; i--) {
-        for (int j = 999; j > 100; j--) {
+    for (int k = 999; k > 30; k--) {
+        for (int i = 999, j = k; j < 1000; i--, j++) {
             ++_cnt_;
             int x = i * j;
             if (x > largest && ispalin(x)) {
