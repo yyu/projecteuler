@@ -15,41 +15,71 @@
 // We can see that 28 is the first triangle number to have over five divisors.
 // What is the value of the first triangle number to have over five hundred divisors?
 //
-// Answer: 
+// Answer: 76576500 (the 12375th triangle number)
 
 #include <iostream>
+#include <vector>
 #include <cstdio>
+#include <cassert>
 
-inline long long tri_num(int n) {
+std::vector<int> primes;
+
+inline int tri_num(int n) {
     return (n * (n + 1)) >> 1;
 }
 
-int count_fac(long long n) {
-    int cnt = 0;
+int next_prime(int p) {
+    assert(primes[p] == p);
+    int N = primes.size();
     int i;
-    for (i = 1; i * i < n; i++)
-        if (n % i == 0)
-            cnt++;
-    cnt *= 2;
-    if (i * i == n)
-        cnt++;
+    for (i = p + 1; i < N; i++)
+        if (primes[i])
+            break;
+    assert(i < N);
+    return i;
+}
+
+void calc_primes(int N) {
+    primes.assign(N, 0);
+    for (int i = 0; i < N; i++)
+        primes[i] = i;
+    for (int p = 2; p * p <= N; p = next_prime(p))
+        for (int i = p * 2; i < N; i += p)
+            primes[i] = 0;
+}
+
+// if
+//     N = p₁ⁿ¹·p₂ⁿ²·p₃ⁿ³·...
+// then the number of divisors D(N) can be computed from
+//     D(N) = (n₁+1)·(n₂+1)·(n₃+1)·...
+int count_fac(int n) {
+    int cnt = 1;
+    for (int p = 2; p <= n; p = next_prime(p)) {
+        int k = 0;
+        while (n % p == 0) {
+            k++;
+            n /= p;
+        }
+        cnt *= k + 1;
+    }
     return cnt;
 }
 
 void foo(int k) {
-    long long n = 1;
+    int n = 1;
     for (; ; n++) {
-        long long t = tri_num(n);
+        int t = tri_num(n);
         int c = count_fac(t);
-        printf("%lld : %lld (%d)\n", n, t, c);
+        // printf("%d : %d (%d)\n", n, t, c);
         if (c > k) {
-            printf("%lld : %lld (%d) !!!\n", n, t, c);
+            printf("%d : %d (%d factors)\n", n, t, c);
             return;
         }
     }
 }
 
 int main(int argc, char* argv[]) {
+    calc_primes(65555);
     foo(500);
     return 0;
 }
